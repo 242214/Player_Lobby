@@ -133,6 +133,48 @@ class ApiService {
             console.error('Error adding user:', error)
         }
     }
+
+    updateLobbyState (csrfCookie, serverSessionCookie, gameUUID, stage) {
+        const apiUrl = `${BASE_URL}/games/${gameUUID}`;
+        const jsonBody = {
+            "stage": stage
+        };
+        try {
+            const response = axios.put(apiUrl, jsonBody, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": REFERER,
+                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
+                },
+                withCredentials: true
+            });
+            return response
+        } catch (error) {
+            console.error('Error when updating lobby:', error)
+        }
+    }
+
+    updatePoints (csrfCookie, serverSessionCookie, gameUUID, points) {
+        const apiUrl = `${BASE_URL}/games/${gameUUID}`;
+        const jsonBody = {
+            "points": points
+        };
+        try {
+            const response = axios.put(apiUrl, jsonBody, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": REFERER,
+                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
+                },
+                withCredentials: true
+            });
+            return response
+        } catch (error) {
+            console.error('Error when updating points:', error)
+        }
+    }
 };
 
 export default ApiService;
