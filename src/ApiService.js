@@ -40,8 +40,8 @@ class ApiService {
                     "Accept": "application/json",
                     "Access-Control-Allow-Origin": "https://localhost:3000",
                     "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-                    "Referer": "",
-                    "Cookie": `XSRF-TOKEN=${csrfCookie};server_session=${serverSessionCookie}`
+                    "Referer": ""
+                    //"Cookie": `XSRF-TOKEN=${csrfCookie};server_session=${serverSessionCookie}`
                 }
             });
             console.log(response)
@@ -73,11 +73,11 @@ class ApiService {
             console.error('Error logging in:', error);
         }
     }
-    createGame (csrfCookie, serverSessionCookie){
+    createGame (csrfCookie, serverSessionCookie, player_limit, level){
         const apiUrl = `${BASE_URL}/games`;
         const jsonBody = {
-            limit: 4,
-            level: 3
+            limit: player_limit,
+            level: level
         };
         try {
             const response = axios.post(apiUrl, jsonBody, {
@@ -110,6 +110,27 @@ class ApiService {
             return response; // Or handle the response as needed
         } catch (error) {
             console.error('Error checking login status:', error);
+        }
+    }
+
+    addUser (csrfCookie, serverSessionCookie, gameUUID, joiner_uuid) {
+        const apiUrl = `${BASE_URL}/games/${gameUUID}`;
+        const jsonBody = {
+            "joiner_uuid": joiner_uuid
+        };
+        try {
+            const response = axios.put(apiUrl, jsonBody, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": REFERER,
+                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
+                },
+                withCredentials: true
+            });
+            return response;
+        } catch (error) {
+            console.error('Error adding user:', error)
         }
     }
 };
