@@ -4,33 +4,116 @@ const BASE_URL = "https://se-test-server.it-core.fun/api";
 const REFERER = "https://se-test-server.it-core.fun";
 
 class ApiService {
-    constructor(){
-       // const cors = require("cors");
-       //    ApiService.use(cors());
-    }
-    getCsrfCookie() {
-        const url =`${BASE_URL}/csrf-cookie`;
+
+    static getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    };
+
+    static fetchCsrfToken = async () => {
         try {
-            const response = axios.get(url, {
-                headers: {
-                    "Accept": "application/json"
-                    // "Referer": REFERER
-                },
-                withCredentials: true // Important for cookies
-            });
-            const csrfCookie = response.headers['set-cookie'].find(cookie => cookie.startsWith("XSRF-TOKEN"));
-            console.log(csrfCookie);
-            return csrfCookie || null;
+            await axios.get('/api/csrf-cookie', { withCredentials: true });
+            const csrfToken = this.getCookie('XSRF-TOKEN');
+            return csrfToken;
         } catch (error) {
-            console.error('Error fetching CSRF cookie:', error);
+            console.error('Error retrieving CSRF cookie:', error);
+            throw error;
         }
-    }
+    };
 
-    getServerSessionCookie (response){
-        //String: serverSessionCookie
-         return response.headers['set-cookie'].find(cookie => cookie.startsWith("server_session"));
+    static fetchLoggedUser = async () => {
+        try {
+            const response = await axios.get('/api/user', { withCredentials: true });
+            return response.data.data;
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            throw error;
+        }
+    };
 
-    }
+    static createGame = async (csrfToken, player_limit, level) => {
+        try {
+            const response = await axios.post('/api/games', {
+                limit: player_limit,
+                level: level
+            },{
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "Cookie": `${csrfToken}`
+                },
+                withCredentials: true
+            });
+            return response.data.data
+        } catch (error) {
+            console.error('Error creating lobby:', error);
+            throw error;
+        }
+    };
+
+    static addUserToLobby = async (csrfToken, gameUUID, joiner_uuid) => {
+        try {
+            const response = await axios.put(`/api/games/${gameUUID}`, {
+                joiner_uuid: joiner_uuid
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "Cookie": `${csrfToken}`
+                },
+                withCredentials: true
+            });
+            return response;
+        } catch (error) {
+            console.error('Error when adding player to lobby:', error);
+            throw error;
+        }
+    };
+
+    static updateLobbyStage = async (csrfToken, gameUUID, stage) => {
+        try {
+            const response = await  axios.put(`/api/games/${gameUUID}`, {
+                stage: stage
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "Cookie": `${csrfToken}`
+                },
+                withCredentials: true
+            });
+            return response;
+        } catch (error) {
+            console.error('Error when updating lobby stage:', error);
+            throw error;
+        }
+    };
+
+    static updateLobbyPoints = async (csrfToken, gameUUID, points) => {
+        try {
+            const response = await axios.put(`/api/games/${gameUUID}`, {
+                points: points
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "Cookie": `${csrfToken}`
+                },
+                withCredentials: true
+            });
+            return response;
+        } catch (error) {
+            console.error('Error when updating lobby points:', error);
+            throw error;
+        }
+    };
+
     ApiRequestAllUsers(csrfCookie, serverSessionCookie) {
         const apiUrl = `${BASE_URL}/users`;
         console.log("ApiRequestAllUsers")
@@ -71,108 +154,6 @@ class ApiService {
             return response;
         } catch (error) {
             console.error('Error logging in:', error);
-        }
-    }
-    createGame (csrfCookie, serverSessionCookie, player_limit, level){
-        const apiUrl = `${BASE_URL}/games`;
-        const jsonBody = {
-            limit: player_limit,
-            level: level
-        };
-        try {
-            const response = axios.post(apiUrl, jsonBody, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Referer": REFERER,
-                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
-                },
-                withCredentials: true
-            });
-            return response; // Or handle the response as needed
-        } catch (error) {
-            console.error('Error creating game:', error);
-        }
-    }
-
-    amILoggedInPls (csrfCookie, serverSessionCookie) {
-        const apiUrl = `${BASE_URL}/user`;
-        try {
-            const response = axios.get(apiUrl, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Referer": REFERER,
-                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
-                },
-                withCredentials: true
-            });
-            return response; // Or handle the response as needed
-        } catch (error) {
-            console.error('Error checking login status:', error);
-        }
-    }
-
-    addUser (csrfCookie, serverSessionCookie, gameUUID, joiner_uuid) {
-        const apiUrl = `${BASE_URL}/games/${gameUUID}`;
-        const jsonBody = {
-            "joiner_uuid": joiner_uuid
-        };
-        try {
-            const response = axios.put(apiUrl, jsonBody, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Referer": REFERER,
-                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
-                },
-                withCredentials: true
-            });
-            return response;
-        } catch (error) {
-            console.error('Error adding user:', error)
-        }
-    }
-
-    updateLobbyState (csrfCookie, serverSessionCookie, gameUUID, stage) {
-        const apiUrl = `${BASE_URL}/games/${gameUUID}`;
-        const jsonBody = {
-            "stage": stage
-        };
-        try {
-            const response = axios.put(apiUrl, jsonBody, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Referer": REFERER,
-                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
-                },
-                withCredentials: true
-            });
-            return response
-        } catch (error) {
-            console.error('Error when updating lobby:', error)
-        }
-    }
-
-    updatePoints (csrfCookie, serverSessionCookie, gameUUID, points) {
-        const apiUrl = `${BASE_URL}/games/${gameUUID}`;
-        const jsonBody = {
-            "points": points
-        };
-        try {
-            const response = axios.put(apiUrl, jsonBody, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Referer": REFERER,
-                    "Cookie": `${csrfCookie}; ${serverSessionCookie}`
-                },
-                withCredentials: true
-            });
-            return response
-        } catch (error) {
-            console.error('Error when updating points:', error)
         }
     }
 };

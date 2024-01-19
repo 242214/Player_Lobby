@@ -1,4 +1,4 @@
-import DummyGameInstance from './DummyGameInstance';
+import ServerConnection from "./ServerConnection";
 class PlayerLobby {
     constructor(gameId, lobbyId, serverConnection) {
         this.gameId = gameId;
@@ -12,6 +12,7 @@ class PlayerLobby {
     async addPlayer(playerId) {
         const exists = await this.serverConnection.checkUuidExists(playerId);
         if (exists) {
+
             this.listOfPlayers.push(playerId);
             this.points.push(0); // Initialize points to 0
             this.xp.push(0); // Initialize xp to 0
@@ -29,7 +30,8 @@ class PlayerLobby {
 
     startGame() {
         // Assuming DummyGameInstance is defined and correctly implemented
-        const game = new DummyGameInstance(this.listOfPlayers, this, this.serverConnection.getUuidFromCreateGameResponse());
+        //const game = new DummyGameInstance(this.listOfPlayers, this, this.serverConnection.getUuidFromCreateGameResponse());
+        const game = ServerConnection().createGameLobby(123)
         return game;
     }
 
