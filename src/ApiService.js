@@ -114,48 +114,66 @@ class ApiService {
         }
     };
 
-    ApiRequestAllUsers(csrfCookie, serverSessionCookie) {
-        const apiUrl = `${BASE_URL}/users`;
-        console.log("ApiRequestAllUsers")
+    static fetchUser = async (csrfToken, userUUID) => {
         try {
-            const response = axios.get(apiUrl, {
+            const response = await axios.get(`/api/users/${userUUID}`,  {
                 headers: {
+                    "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "Access-Control-Allow-Origin": "https://localhost:3000",
-                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-                    "Referer": ""
-                    //"Cookie": `XSRF-TOKEN=${csrfCookie};server_session=${serverSessionCookie}`
-                }
-            });
-            console.log(response)
-            return response.data; // Or however you want to handle the response
-        } catch (error) {
-            console.error('Error requesting all users:', error);
-        }
-    }
-
-    loginAsPlayerLobby (csrfCookie) {
-        const apiUrl = `${BASE_URL}/login`;
-        const jsonBody = {
-            "name": "playerLobby",
-            "email": "player.lobby@gmail.com",
-            "password": "frytkiBatatki1",
-            "password_confirmation": "frytkiBatatki1"
-        };
-        try {
-            const response = axios.post(apiUrl, jsonBody, {
-                headers: {
-                    "Accept": "application/json",
-                    "Referer": REFERER,
-                    "X-XSRF-TOKEN": csrfCookie // Make sure this is correct for your server setup
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "Cookie": `${csrfToken}`
                 },
                 withCredentials: true
             });
             return response;
         } catch (error) {
-            console.error('Error logging in:', error);
+            console.error('Error when fetching user data:', error);
+            throw error;
         }
-    }
+    };
+
+    // ApiRequestAllUsers(csrfCookie, serverSessionCookie) {
+    //     const apiUrl = `${BASE_URL}/users`;
+    //     console.log("ApiRequestAllUsers")
+    //     try {
+    //         const response = axios.get(apiUrl, {
+    //             headers: {
+    //                 "Accept": "application/json",
+    //                 "Access-Control-Allow-Origin": "https://localhost:3000",
+    //                 "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+    //                 "Referer": ""
+    //                 //"Cookie": `XSRF-TOKEN=${csrfCookie};server_session=${serverSessionCookie}`
+    //             }
+    //         });
+    //         console.log(response)
+    //         return response.data; // Or however you want to handle the response
+    //     } catch (error) {
+    //         console.error('Error requesting all users:', error);
+    //     }
+    // }
+    //
+    // loginAsPlayerLobby (csrfCookie) {
+    //     const apiUrl = `${BASE_URL}/login`;
+    //     const jsonBody = {
+    //         "name": "playerLobby",
+    //         "email": "player.lobby@gmail.com",
+    //         "password": "frytkiBatatki1",
+    //         "password_confirmation": "frytkiBatatki1"
+    //     };
+    //     try {
+    //         const response = axios.post(apiUrl, jsonBody, {
+    //             headers: {
+    //                 "Accept": "application/json",
+    //                 "Referer": REFERER,
+    //                 "X-XSRF-TOKEN": csrfCookie // Make sure this is correct for your server setup
+    //             },
+    //             withCredentials: true
+    //         });
+    //         return response;
+    //     } catch (error) {
+    //         console.error('Error logging in:', error);
+    //     }
+    // }
 };
 
 export default ApiService;

@@ -4,7 +4,7 @@ import PlayerLobby from "./PlayerLobby"; // Import the ApiService you created ea
 class ServerConnection {
     constructor() {
         this.Lobbies = [];
-    }
+    };
 
     async createLobby(csrfToken, level) {
         const response = ApiService.createGame(csrfToken, 4, level);
@@ -14,19 +14,37 @@ class ServerConnection {
         const lobby = new PlayerLobby(level, gameuuid, this);
         this.Lobbies.push(lobby);
         return lobby;
-    }
+    };
 
     async addPlayer(csrfToken, gameUUID, joinerUUID) {
         const response = ApiService.addUserToLobby(csrfToken, gameUUID, joinerUUID);
         return response;
-    }
+    };
 
     async getLobbyAmount() {
         return this.Lobbies.length;
-    }
+    };
     async getLobby(num) {
         return this.Lobbies[num];
-    }
+    };
+
+    async getLoggedUser() {
+        const response = ApiService.fetchLoggedUser()
+        var split = response.split('uuid:" "');
+        const playerUUID = split[1].split('"');
+        split = response.split('name:" "');
+        const playerName = split[1].split('"');
+        return [playerUUID[0], playerName[0], 0];
+    };
+
+    async getUser(csrfToken, userUUID) {
+        const response = ApiService.fetchUser(csrfToken, userUUID)
+        var split = response.split('uuid:" "');
+        const playerUUID = split[1].split('"');
+        split = response.split('name:" "');
+        const playerName = split[1].split('"');
+        return [playerUUID[0], playerName[0], 0];
+    };
 //     constructor(service) {
 //         this.playerLobbies = [];
 //         this.objectMapper = {}; // Assuming you have a way to parse and handle JSON data as needed

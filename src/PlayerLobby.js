@@ -5,26 +5,15 @@ class PlayerLobby {
         this.lobbyId = lobbyId;
         this.serverConnection = serverConnection; // Make sure this is already defined and correctly implemented
         this.listOfPlayers = [];
+        //this.listOfPlayers.push([playerUUID, playerName, points])
+        this.listOfPlayers.push(this.serverConnection.getLoggedUser())
         this.points = [];
-        this.xp = [];
     }
 
     async addPlayer(playerId) {
         const exists = await this.serverConnection.checkUuidExists(playerId);
         if (exists) {
-
-            this.listOfPlayers.push(playerId);
-            this.points.push(0); // Initialize points to 0
-            this.xp.push(0); // Initialize xp to 0
-        }
-    }
-
-    kickPlayer(playerId) {
-        const playerIndex = this.listOfPlayers.indexOf(playerId);
-        if (playerIndex !== -1) {
-            this.listOfPlayers.splice(playerIndex, 1);
-            this.points.splice(playerIndex, 1);
-            this.xp.splice(playerIndex, 1);
+            this.listOfPlayers.push(this.serverConnection.getUser('token', playerId));
         }
     }
 
