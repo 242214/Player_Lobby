@@ -4,10 +4,11 @@ import PlayerLobby from "./PlayerLobby"; // Import the ApiService you created ea
 class ServerConnection {
     constructor() {
         this.Lobbies = [];
+        this.csrfToken = ApiService.getCookie()
     };
 
-    async createLobby(csrfToken, level) {
-        const response = ApiService.createGame(csrfToken, 4, level);
+    async createLobby(level) {
+        const response = ApiService.createGame(this.csrfToken, 4, level);
         const split = response.split('"uuid": "');
         const gameuuid = split[1].split('"');
 
@@ -16,8 +17,8 @@ class ServerConnection {
         return lobby;
     };
 
-    async addPlayer(csrfToken, gameUUID, joinerUUID) {
-        const response = ApiService.addUserToLobby(csrfToken, gameUUID, joinerUUID);
+    async addPlayer(gameUUID, joinerUUID) {
+        const response = ApiService.addUserToLobby(this.csrfToken, gameUUID, joinerUUID);
         return response;
     };
 
@@ -37,13 +38,23 @@ class ServerConnection {
         return [playerUUID[0], playerName[0], 0];
     };
 
-    async getUser(csrfToken, userUUID) {
-        const response = ApiService.fetchUser(csrfToken, userUUID)
+    async getUser(userUUID) {
+        const response = ApiService.fetchUser(this.csrfToken, userUUID)
         var split = response.split('uuid:" "');
         const playerUUID = split[1].split('"');
         split = response.split('name:" "');
         const playerName = split[1].split('"');
         return [playerUUID[0], playerName[0], 0];
+    };
+
+    async updateLobby(stage, points, gameUUID) {
+        if(stage == null) {
+            const response = ApiService.updateLobbyPoints(this.csrfToken, gameUUID, points);
+            return response;
+        } else {
+            const response = ApiService.updateLobbyStage(this.csrfToken, gameUUID, stage);
+            return response;
+        }
     };
 //     constructor(service) {
 //         this.playerLobbies = [];

@@ -1,8 +1,5 @@
 import axios from 'axios';
 
-const BASE_URL = "https://se-test-server.it-core.fun/api";
-const REFERER = "https://se-test-server.it-core.fun";
-
 class ApiService {
 
     static getCookie = (name) => {

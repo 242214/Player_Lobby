@@ -8,49 +8,47 @@ class PlayerLobby {
         //this.listOfPlayers.push([playerUUID, playerName, points])
         this.listOfPlayers.push(this.serverConnection.getLoggedUser())
         this.points = [];
-    }
+    };
 
     async addPlayer(playerId) {
-        const exists = await this.serverConnection.checkUuidExists(playerId);
-        if (exists) {
-            this.listOfPlayers.push(this.serverConnection.getUser('token', playerId));
+        const response = await this.serverConnection.addPlayer('token', this.gameId, playerId);
+        if (response.match('"message": "You have successfully joined the game"')) {
+            this.listOfPlayers.push(this.serverConnection.getUser(playerId));
+        } else {
+            console("Player wasn't added");
         }
-    }
+    };
 
-    startGame() {
-        // Assuming DummyGameInstance is defined and correctly implemented
-        //const game = new DummyGameInstance(this.listOfPlayers, this, this.serverConnection.getUuidFromCreateGameResponse());
-        const game = ServerConnection().createGameLobby(123)
-        return game;
-    }
+    async startGame() {
+        const response = await this.serverConnection.updateLobby(2, null, this.gameId);
+        // send this.listOfPlayers to game component
+        return response;
+    };
+
+    async endGame() {
+        const response = await this.serverConnection(3, null, this.gameId);
+        return response;
+    };
 
     getGameId() {
         return this.gameId;
-    }
+    };
 
     getLobbyId() {
         return this.lobbyId;
-    }
+    };
 
     getListOfPlayers() {
         return [...this.listOfPlayers];
-    }
-
-    addXP(xpToAdd) {
-        this.xp = this.xp.map((xp, index) => xp + (xpToAdd[index] || 0));
-    }
+    };
 
     addPoints(pointsToAdd) {
         this.points = this.points.map((points, index) => points + (pointsToAdd[index] || 0));
-    }
+    };
 
     getPoints() {
         return [...this.points];
-    }
-
-    getXp() {
-        return [...this.xp];
-    }
+    };
 }
 
 export default PlayerLobby;
