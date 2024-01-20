@@ -129,6 +129,24 @@ class ApiService {
         }
     };
 
+    static destroyGame = async (csrfToken, gameUUID) => {
+        try {
+            const response = await axios.delete(`api/games/${gameUUID}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "Cookie": `${csrfToken}`
+                },
+                withCredentials: true
+            });
+            return response;
+        } catch (error) {
+            console.error('Error when destroying game:', error);
+            throw error;
+        }
+    };
+
     // ApiRequestAllUsers(csrfCookie, serverSessionCookie) {
     //     const apiUrl = `${BASE_URL}/users`;
     //     console.log("ApiRequestAllUsers")

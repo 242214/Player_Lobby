@@ -56,6 +56,17 @@ class ServerConnection {
             return response;
         }
     };
+
+    async destroyPlayerLobby(gameUUID) {
+        const response = ApiService.destroyGame(this.csrfToken, gameUUID);
+        for(let i = 0; i < this.Lobbies.length; i++) {
+            if(this.Lobbies[i][1] == gameUUID) {
+                this.Lobbies.splice(i, 1);
+                i = this.Lobbies.length + 10;
+            }
+        }
+        return response;
+    };
 //     constructor(service) {
 //         this.playerLobbies = [];
 //         this.objectMapper = {}; // Assuming you have a way to parse and handle JSON data as needed

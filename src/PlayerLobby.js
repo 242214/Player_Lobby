@@ -15,7 +15,7 @@ class PlayerLobby {
         if (response.match('"message": "You have successfully joined the game"')) {
             this.listOfPlayers.push(this.serverConnection.getUser(playerId));
         } else {
-            console("Player wasn't added");
+            console.error("Player wasn't added");
         }
     };
 
