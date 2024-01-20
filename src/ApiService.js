@@ -2,21 +2,47 @@ import axios from 'axios';
 
 class ApiService {
 
-    static getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
+    static getCsrfToken = async () => {
+        try {
+            const response = await axios.get('https://se-test-server.it-core.fun/api/csrf-cookie', {
+                headers: {
+                    "Accept": "application/json",
+                    //"Referer": "https://se-test-server.it-core.fun",
+                    "Origin": "https://localhost:3000"
+                },
+                withCredentials: true
+            });
+            let csrfCookie = await response.headers['set-cookie'].find(cookie => cookie.startsWith("XSRF-TOKEN")) + ";" + response.headers['set-cookie'].find(cookie => cookie.startsWith("server_session"));
+            //console.log(csrfCookie.split(";"))
+            const split = csrfCookie.split(";");
+            const token = `${split[0]};${split[7]}`
+            console.log(token);
+            return token;
+        } catch (error) {
+            console.error('Error retriving CSRF cookie:', error);
+            throw error;
+        }
     };
 
-    static fetchCsrfToken = async () => {
+    static loginAsPlayerLobby = async (csrfCookie) => {
+        const apiUrl = `https://se-test-server.it-core.fun/api/login`;
+        const jsonBody = {
+            "email": "player.lobby@gmail.com",
+            "password": "frytkiBatatki1",
+        };
         try {
-            await axios.get('/api/csrf-cookie', { withCredentials: true });
-            const csrfToken = this.getCookie('XSRF-TOKEN');
-            return csrfToken;
+            const response = axios.post(apiUrl, jsonBody, {
+                headers: {
+                    "Connection": "keep-alive",
+                    "Accept": "application/json",
+                    "Referer": "https://se-test-server.it-core.fun",
+                    "X-XSRF-TOKEN": csrfCookie,
+                },
+                withCredentials: true
+            });
+            return response;
         } catch (error) {
-            console.error('Error retrieving CSRF cookie:', error);
-            throw error;
+            console.error('Error logging in:', error);
         }
     };
 
@@ -147,48 +173,6 @@ class ApiService {
         }
     };
 
-    // ApiRequestAllUsers(csrfCookie, serverSessionCookie) {
-    //     const apiUrl = `${BASE_URL}/users`;
-    //     console.log("ApiRequestAllUsers")
-    //     try {
-    //         const response = axios.get(apiUrl, {
-    //             headers: {
-    //                 "Accept": "application/json",
-    //                 "Access-Control-Allow-Origin": "https://localhost:3000",
-    //                 "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-    //                 "Referer": ""
-    //                 //"Cookie": `XSRF-TOKEN=${csrfCookie};server_session=${serverSessionCookie}`
-    //             }
-    //         });
-    //         console.log(response)
-    //         return response.data; // Or however you want to handle the response
-    //     } catch (error) {
-    //         console.error('Error requesting all users:', error);
-    //     }
-    // }
-    //
-    // loginAsPlayerLobby (csrfCookie) {
-    //     const apiUrl = `${BASE_URL}/login`;
-    //     const jsonBody = {
-    //         "name": "playerLobby",
-    //         "email": "player.lobby@gmail.com",
-    //         "password": "frytkiBatatki1",
-    //         "password_confirmation": "frytkiBatatki1"
-    //     };
-    //     try {
-    //         const response = axios.post(apiUrl, jsonBody, {
-    //             headers: {
-    //                 "Accept": "application/json",
-    //                 "Referer": REFERER,
-    //                 "X-XSRF-TOKEN": csrfCookie // Make sure this is correct for your server setup
-    //             },
-    //             withCredentials: true
-    //         });
-    //         return response;
-    //     } catch (error) {
-    //         console.error('Error logging in:', error);
-    //     }
-    // }
-};
+}
 
 export default ApiService;

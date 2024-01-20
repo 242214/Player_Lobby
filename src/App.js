@@ -14,10 +14,12 @@ function App() {
   // Handles creating a new game lobby
   const handleCreateLobby = async () => {
     const hub = new Hub();
-    const service = new ApiService(); // Assuming default settings are fine
-    const serverConnection = hub.chooseGame();
-    const lobby = await serverConnection.createGameLobby(123); // Replace 123 with actual gameId
-    setLobby(lobby);
+    const serverConnection = await hub.chooseGame();
+    serverConnection.csrfToken = await ApiService.getCsrfToken();
+    //const login = await ApiService.loginAsPlayerLobby(serverConnection.csrfToken);
+    //console.log(login);
+    //const lobby = await serverConnection.createLobby(1);
+    //setLobby(lobby);
   };
 
   // Handles adding a new player to the lobby

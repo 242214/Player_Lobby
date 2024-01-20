@@ -4,22 +4,21 @@ import PlayerLobby from "./PlayerLobby"; // Import the ApiService you created ea
 class ServerConnection {
     constructor() {
         this.Lobbies = [];
-        this.csrfToken = ApiService.getCookie()
+        this.csrfToken = "";
     };
 
     async createLobby(level) {
         const response = ApiService.createGame(this.csrfToken, 4, level);
         const split = response.split('"uuid": "');
-        const gameuuid = split[1].split('"');
+        const gameUUID = split[1].split('"');
 
-        const lobby = new PlayerLobby(level, gameuuid, this);
+        const lobby = new PlayerLobby(level, gameUUID, this);
         this.Lobbies.push(lobby);
         return lobby;
     };
 
     async addPlayer(gameUUID, joinerUUID) {
-        const response = ApiService.addUserToLobby(this.csrfToken, gameUUID, joinerUUID);
-        return response;
+        return ApiService.addUserToLobby(this.csrfToken, gameUUID, joinerUUID);
     };
 
     async getLobbyAmount() {
@@ -31,7 +30,7 @@ class ServerConnection {
 
     async getLoggedUser() {
         const response = ApiService.fetchLoggedUser()
-        var split = response.split('uuid:" "');
+        let split = response.split('uuid:" "');
         const playerUUID = split[1].split('"');
         split = response.split('name:" "');
         const playerName = split[1].split('"');
@@ -40,7 +39,7 @@ class ServerConnection {
 
     async getUser(userUUID) {
         const response = ApiService.fetchUser(this.csrfToken, userUUID)
-        var split = response.split('uuid:" "');
+        let split = response.split('uuid:" "');
         const playerUUID = split[1].split('"');
         split = response.split('name:" "');
         const playerName = split[1].split('"');
@@ -60,7 +59,7 @@ class ServerConnection {
     async destroyPlayerLobby(gameUUID) {
         const response = ApiService.destroyGame(this.csrfToken, gameUUID);
         for(let i = 0; i < this.Lobbies.length; i++) {
-            if(this.Lobbies[i][1] == gameUUID) {
+            if(this.Lobbies[i][1] === gameUUID) {
                 this.Lobbies.splice(i, 1);
                 i = this.Lobbies.length + 10;
             }
@@ -104,7 +103,7 @@ class ServerConnection {
 //             const response = await this.service.createGame(csrfCookie, sessionCookie);
 //             const responseBody = response.data; // Adjust based on actual API response structure
 //
-//             // Assuming the response has a data structure with a uuid, adjust as necessary
+//             // Assuming the response has a data structure with an uuid, adjust as necessary
 //             return responseBody.data ? responseBody.data.uuid : null;
 //         } catch (error) {
 //             console.error('Error getting UUID from create game response:', error);
