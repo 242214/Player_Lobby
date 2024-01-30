@@ -1,0 +1,42 @@
+body {
+  background-color: #01172f;
+  margin: 0;
+  padding: 40px 0 0;
+}
+
+#logo {
+  width: 100%;
+}
+
+#container {
+  background-color: #eae8ff30;
+  color: #eae8ff;
+  border: 3px solid #eae8ff;
+  border-radius: 10px;
+  width: 30%;
+  margin: 20px auto 0;
+  padding: 0;
+  text-align: center;
+}
+
+#form label {
+  display: block;
+}
+#form label input {
+  display: block;
+  margin: 3px auto 0;
+}
+
+#form button {
+  width: 35%;
+  height: 35px;
+  border-radius: 10px;
+  border: 1px solid #eae8ff;
+  color: #eae8ff;
+  background-color: #01172f;
+}
+
+#link a {
+  text-decoration: underline;
+  color: #eae8ff;
+}

@@ -1,0 +1,56 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.homepage-container {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: 15%;
+  height: 100vh;
+  background-color: #eae8ff30;
+  border-right: 3px solid #eae8ff;
+  color: #eae8ff;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #eae8ff;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: underline;
+  padding: 10px;
+}
+#active {
+  border: 3px solid #eae8ff;
+  text-decoration: none;
+  background-color: #01172f;
+}
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start; /* Align items at the start vertically */
+  padding: 0 20px; /* Adjust as needed */
+}
+
+.file-box {
+  width: 200px; /* Adjust the width as needed */
+  height: 150px; /* Adjust the height as needed */
+  margin: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+  border: 1px solid #ccc; /* Add border */
+  flex-shrink: 0; /* Ensure file boxes do not shrink */
+  background-color: #eae8ff;
+}
